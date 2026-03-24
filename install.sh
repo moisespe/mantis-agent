@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # descarga binario
-sudo curl -L https://github.com/moisespe/mantis-agent/releases/download/0.1.0/mantis-agent -o /usr/local/bin/mantis-age>
+sudo curl -L https://github.com/moisespe/mantis-agent/releases/download/0.1.0/mantis-agent -o /usr/local/bin/mantis-agente
 SERVICE_NAME=mantis-agente
 BIN_PATH=/usr/local/bin/mantis-agente
 
