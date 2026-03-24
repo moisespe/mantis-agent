@@ -1,14 +1,13 @@
 #!/bin/bash
 
+# descarga binario
+sudo curl -L https://github.com/moisespe/mantis-agent/releases/download/0.1.0/mantis-agent -o /usr/local/bin/mantis-age>
 SERVICE_NAME=mantis-agente
 BIN_PATH=/usr/local/bin/mantis-agente
-VERSION=0.1.0
 
-# descarga binario
-sudo curl https://github.com/moisespe/mantis-agent/releases/download/$VERSION/mantis-agent -o /usr/local/bin/mantis-agent
 
 # copiar binario
-sudo cp mantis-agente $BIN_PATH
+#sudo cp mantis-agente $BIN_PATH
 sudo chmod +x $BIN_PATH
 
 # crear servicio
