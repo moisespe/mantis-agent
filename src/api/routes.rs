@@ -1,7 +1,9 @@
 use axum::{routing::get, Router, Json};
 use serde::Serialize;
-use crate::collector::system;
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use crate::collector::system;
+use crate::collector::process;
 
 
 #[derive(Serialize)]
@@ -35,6 +37,17 @@ async fn metrics() -> Json<CoreSystem> {
 
     let (cpu, used_mem, total_mem) = system::get_metrics();
 
+    let processes = process::get_processes()
+        .into_iter()
+        .map(|(pid, name, cpu, memory)| ProcessInfo {
+            pid,
+            name,
+            cpu,
+            memory,
+        })
+        .collect();
+
+
     Json(CoreSystem {
     core: CoreMetrics  {
         cpu             : cpu,
@@ -42,7 +55,7 @@ async fn metrics() -> Json<CoreSystem> {
         memory_total    : total_mem / 1024 / 1024,
         timestamp       : timestamp,
     },
-    process: Some(vec![]),
+    process: Some(processes),
     })
 }
 
