@@ -45,6 +45,11 @@ pub struct NetworkCore {
     transmitted : u64,
 }
 
+#[derive(Serialize)]
+pub struct ConnectionCore{
+    raw: String,
+}
+
 
 async fn system() -> Json<SystemCore> {
     let timestamp = SystemTime::now()
@@ -97,7 +102,6 @@ async fn disk() -> Json<Vec<DiskCore>> {
             total       : total / 1024 / 1024,
             available   : available / 1024 / 1024,
         }).collect();
-        
 
     Json(disks)
 }
@@ -116,6 +120,15 @@ async fn network() -> Json<Vec<NetworkCore>> {
     Json(networks)
 }
 
+async fn connections() ->Json<Vec<ConnectionCore>> { 
+    let conns : Vec<ConnectionCore> = network::get_connections()
+        .into_iter()
+        .map(|raw| ConnectionCore {raw})
+        .collect();
+
+    Json(conns)
+}
+
 
 
 pub fn create_routes() -> Router {
@@ -125,5 +138,6 @@ pub fn create_routes() -> Router {
             .route("/api/metrics/process", get(process))
             .route("/api/metrics/disk", get(disk))
             .route("/api/metrics/network", get(network))
+            .route("/api/metrics/network/connections",get(connections))
 }
 
