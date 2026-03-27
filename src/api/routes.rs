@@ -1,9 +1,13 @@
 use axum::{routing::get, Router, Json};
 use serde::Serialize;
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::collections::HashSet;
 
 use crate::collector::system;
 use crate::collector::process;
+use crate::collector::disk;
+
+
 
 
 #[derive(Serialize)]
@@ -24,10 +28,16 @@ pub struct ProcessCore {
 
 #[derive(Serialize)]
 pub struct HealthCore {
-    status: String,
-    timestamp: u64,
+    status      : String,
+    timestamp   : u64,
 }
 
+#[derive(Serialize)]
+pub struct DiskCore {
+    name        : String,
+    total       : u64,
+    available   : u64,
+}
 
 
 async fn system() -> Json<SystemCore> {
@@ -58,7 +68,7 @@ async fn health() -> Json<HealthCore> {
 
 
 async fn process() -> Json<Vec<ProcessCore>> {
-let process = process::get_process()
+    let process = process::get_process()
         .into_iter()
         .map(|(pid, name, cpu, memory)| ProcessCore {
             pid     : pid,
@@ -71,10 +81,29 @@ let process = process::get_process()
     Json(process)
 }
 
+
+async fn disk() -> Json<Vec<DiskCore>> {
+    let mut seen = HashSet::new();
+    let disks = disk::get_disks()
+        .into_iter()
+        .filter(|(name, _, _)| seen.insert(name.clone()))
+        .map(|(name, total, available)| DiskCore {
+            name        : name,
+            total       : total / 1024 / 1024,
+            available   : available / 1024 / 1024,
+        }).collect();
+        
+
+    Json(disks)
+}
+
+
+
 pub fn create_routes() -> Router {
     Router::new()
             .route("/api/metrics/system", get(system))
             .route("/api/metrics/health", get(health))
             .route("/api/metrics/process", get(process))
+            .route("/api/metrics/disk", get(disk))
 }
 
