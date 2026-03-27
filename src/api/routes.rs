@@ -2,11 +2,10 @@ use axum::{routing::get, Router, Json};
 use serde::Serialize;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-
 use crate::collector::system;
 use crate::collector::process;
 use crate::collector::disk;
-
+use crate::collector::network;
 
 
 
@@ -37,6 +36,13 @@ pub struct DiskCore {
     name        : String,
     total       : u64,
     available   : u64,
+}
+
+#[derive(Serialize)]
+pub struct NetworkCore {
+    name        : String,
+    received    : u64,
+    transmitted : u64,
 }
 
 
@@ -97,6 +103,20 @@ async fn disk() -> Json<Vec<DiskCore>> {
 }
 
 
+async fn network() -> Json<Vec<NetworkCore>> {
+    let networks: Vec<NetworkCore> = network::get_network()
+        .into_iter()
+        .map(|(name, received, transmitted)| NetworkCore {
+            name        : name,
+            received    : received,
+            transmitted : transmitted,
+        })
+        .collect();
+
+    Json(networks)
+}
+
+
 
 pub fn create_routes() -> Router {
     Router::new()
@@ -104,5 +124,6 @@ pub fn create_routes() -> Router {
             .route("/api/metrics/health", get(health))
             .route("/api/metrics/process", get(process))
             .route("/api/metrics/disk", get(disk))
+            .route("/api/metrics/network", get(network))
 }
 
