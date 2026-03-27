@@ -1,6 +1,6 @@
 use sysinfo::{System};
 
-pub fn get_processes() -> Vec<(u32, String, f32, u64)> {
+pub fn get_process() -> Vec<(u32, String, f32, u64)> {
     let mut sys = System::new_all();
     sys.refresh_all();
 
