@@ -1,7 +1,7 @@
 use axum::{routing::get, Router, Json};
 use serde::Serialize;
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::collections::HashSet;
+
 
 use crate::collector::system;
 use crate::collector::process;
@@ -83,10 +83,9 @@ async fn process() -> Json<Vec<ProcessCore>> {
 
 
 async fn disk() -> Json<Vec<DiskCore>> {
-    let mut seen = HashSet::new();
+
     let disks = disk::get_disks()
         .into_iter()
-        .filter(|(name, _, _)| seen.insert(name.clone()))
         .map(|(name, total, available)| DiskCore {
             name        : name,
             total       : total / 1024 / 1024,
