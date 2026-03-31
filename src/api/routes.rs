@@ -47,7 +47,8 @@ pub struct NetworkCore {
 
 #[derive(Serialize)]
 pub struct ConnectionCore{
-    raw: String,
+    pub local_ip: String,
+    pub local_port: u16,
 }
 
 
@@ -121,11 +122,7 @@ async fn network() -> Json<Vec<NetworkCore>> {
 }
 
 async fn connections() ->Json<Vec<ConnectionCore>> { 
-    let conns : Vec<ConnectionCore> = network::get_connections()
-        .into_iter()
-        .map(|raw| ConnectionCore {raw})
-        .collect();
-
+    let conns = network::get_connections();
     Json(conns)
 }
 
