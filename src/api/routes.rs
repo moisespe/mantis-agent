@@ -61,7 +61,7 @@ async fn system() -> Json<SystemCore> {
 
 
     Json( SystemCore  {
-        cpu             : cpu * 100.0,
+        cpu             : cpu,
         memory_used     : used_mem / 1024 / 1024,
         memory_total    : total_mem / 1024 / 1024,
         timestamp       : timestamp,
